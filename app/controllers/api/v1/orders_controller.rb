@@ -18,18 +18,22 @@ module Api
                         order_book = order.order_books.build(item)
                         if !order_book.save
                             isSuccess = false
+                            #Lou Not necessary. You need research about dependent params in rails model
                             order.order_books.destroy_all
                             order.destroy
+                            #Lou  Why not use return ?
                             render json: {status: 'FAIL', message: 'Creata order book', data: order_book.errors}, status: :unprocessable_entity
                             break
                         else
                         
                         end
                     end 
+                    #Lou It don't use isSuccess var
                     if isSuccess
                         render json: {status: 'SUCCESS', message: 'Create order book', data: order.order_books}, status: :ok
                     end
                 else
+                  #Lou Order don't save. Why use destroy method?
                     order.destroy
                     render json: {status: 'FAIL', message: 'Creata order', data: order.errors}, status: :unprocessable_entity
                 end
@@ -54,6 +58,7 @@ module Api
             end
 
             private 
+            #Lou Is it necessary to create method? Try merge it with order_params method.
             def order_books_params
                 params.permit(:book_list => [:book_id,  :quantity])
             end
