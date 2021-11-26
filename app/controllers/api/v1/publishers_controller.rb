@@ -7,12 +7,12 @@ module Api
             end
             def show
                 publisher = Publisher.find(params[:id])
-                books = publisher.books
-                render json: {status: 'SUCCESS', message: 'Show book by publisher', data: books}, status: :ok
+                # books = publisher.books
+                render json: {status: 'SUCCESS', message: 'Show book by publisher', data: publisher}, status: :ok
             end
 
             def create 
-                puplisher = Publisher.new(publisher_params)
+                publisher = Publisher.new(publisher_params)
                 if publisher.save
                     render json: {status: 'SUCCESS', message: 'Create publisher', data: publisher}, status: :ok
                 else 
@@ -21,7 +21,7 @@ module Api
             end
 
             def destroy
-                puplisher = Publisher.find(params[:id])
+                publisher = Publisher.find(params[:id])
                 if publisher.destroy
                     render json: {status: 'SUCCESS', message: 'Delete publisher', data: publisher}, status: :ok
                 else 
@@ -30,7 +30,7 @@ module Api
             end
 
             def update
-                puplisher = Publisher.find(params[:id])
+                publisher = Publisher.find(params[:id])
                 if publisher.update(publisher_params)
                     render json: {status: 'SUCCESS', message: 'Update publisher', data: publisher}, status: :ok
                 else 

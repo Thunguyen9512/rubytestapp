@@ -15,7 +15,7 @@ module Api
                 if book.save
                     render json: {status: 'SUCCESS', message: 'create book', data: book}, status: :ok
                 else 
-                    render json: {status: 'FAIL', message: 'creata book', data: book}, status: :unprocessable_entity
+                    render json: {status: 'FAIL', message: 'creata book', data: book.errors}, status: :unprocessable_entity
                 end
             end
 
@@ -34,13 +34,14 @@ module Api
                 if book.update(book_params)
                     render json: {status: 'SUCCESS', message: 'Update book', data: book}, status: :ok
                 else 
-                    render json: {status: 'FAIL', message: 'Update book'}, status: :unprocessable_entity
+                    render json: {status: 'FAIL', message: 'Update book', data: book.errors}, status: :unprocessable_entity
+                end
             end
 
             private 
 
             def book_params
-                params.permit(:name, :category_id, :author_id, :category_id, :public_year, :quantity, :pulisher_id)
+                params.permit(:name, :category_id, :author_id, :public_year, :quantity, :pulisher_id)
             end
         end
     end

@@ -7,8 +7,8 @@ module Api
             end
             def show
                 order = Order.find(params[:id])
-                order_books = order.order_books
-                render json: {status: 'SUCCESS', message: 'Show order', data: order_books}, status: :ok
+                order_books = order.order_books                
+                render json: {status: 'SUCCESS', message: 'Show order', data: order}, status: :ok
             end
             def create 
                 order = Order.new(order_params)

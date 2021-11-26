@@ -11,7 +11,7 @@ module Api
             end
 
             def create 
-                category = Category.new(author_params)
+                category = Category.new(category_params)
                 if category.save
                     render json: {status: 'SUCCESS', message: 'Create category', data: category}, status: :ok
                 else 
@@ -30,7 +30,7 @@ module Api
 
             def update
                 category = Category.find(params[:id])
-                if category.update(author_params)
+                if category.update(category_params)
                     render json: {status: 'SUCCESS', message: 'Update category', data: category}, status: :ok
                 else 
                     render json: {status: 'FAIL', message: 'Update category'}, status: :unprocessable_entity
