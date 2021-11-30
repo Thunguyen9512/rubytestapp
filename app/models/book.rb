@@ -1,7 +1,7 @@
 class Book < ApplicationRecord
   #Lou Need foreign_key params in relationship model?
-    belongs_to :author, foreign_key: 'author_id'
-    belongs_to :publisher, foreign_key: 'pulisher_id'
-    belongs_to :category, foreign_key: 'category_id'
-    has_many :orders, foreign_key: 'book_id'
+    belongs_to :author
+    belongs_to :publisher
+    belongs_to :category
+    has_many :orders
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_25_115819) do
+ActiveRecord::Schema.define(version: 2021_11_30_020630) do
 
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 2021_11_25_115819) do
     t.integer "quantity"
     t.string "author_id"
     t.string "category_id"
-    t.string "pulisher_id"
+    t.string "publisher_id"
     t.date "public_year"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

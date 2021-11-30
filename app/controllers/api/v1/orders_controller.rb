@@ -11,10 +11,8 @@ module Api
                 render json: {status: 'SUCCESS', message: 'Show order', data: order}, status: :ok
             end
             def create
-                # reader = User.where(role: "reader").find_by(params[:reader_id])
                 reader = User.find_by id: params[:reader_id], role: "reader"
                 staff = User.find_by id: params[:staff_id], role: "staff"
-                # staff = User.where(role: "staff").find(params[:staff_id])
                 if reader && staff
                     order = Order.new(order_params)
                     if order.save
@@ -76,7 +74,6 @@ module Api
                 params.permit(:book_list => [:book_id,  :quantity])
             end
             def order_params
-                # params.permit(:reader_id, :staff_id, :expire_date)
                 params.permit(:reader_id, :staff_id, :expire_date)
             end
         end
