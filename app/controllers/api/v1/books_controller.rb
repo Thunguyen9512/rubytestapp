@@ -1,8 +1,10 @@
 module Api
     module V1 
         class BooksController < ApplicationController
+            before_action :authenticate_user
             def index
                 books = Book.paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
+
                 pagination = { page: params[:page] || 1 , per_page: params[:per_page] || 20, total_pages: books.total_pages, total_count: books.total_entries }
                 render json: {status: 'SUCCESS', message: 'load book', data: books, pagination: pagination}, status: :ok
             end

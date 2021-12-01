@@ -22,9 +22,9 @@ ActiveRecord::Schema.define(version: 2021_11_30_020630) do
   create_table "books", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
     t.integer "quantity"
-    t.string "author_id"
-    t.string "category_id"
-    t.string "publisher_id"
+    t.integer "author_id"
+    t.integer "category_id"
+    t.integer "publisher_id"
     t.date "public_year"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -37,16 +37,16 @@ ActiveRecord::Schema.define(version: 2021_11_30_020630) do
   end
 
   create_table "order_books", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "book_id"
+    t.integer "book_id"
     t.integer "quantity"
-    t.string "order_id"
+    t.integer "order_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "orders", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "reader_id"
-    t.string "staff_id"
+    t.integer "reader_id"
+    t.integer "staff_id"
     t.date "expire_date"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

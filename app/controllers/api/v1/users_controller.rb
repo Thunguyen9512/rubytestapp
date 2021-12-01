@@ -1,6 +1,8 @@
 module Api
     module V1 
         class UsersController < ApplicationController
+            before_action :authenticate_user,  only: [:index, :update]
+            before_action :authorize_as_admin, only: [:destroy]
             def index
                 if user_params = ''
                     users = User.paginate(:page => params[:page], :per_page => params[:per_page] || 20).order('created_at desc')
@@ -16,8 +18,11 @@ module Api
                 user = User.find_by(id: params[:id])
                 render json: {status: 'SUCCESS', message: 'Show user', data: user}, status: :ok
             end
-
             def create 
+                if(user_params[:role] != "reader" && user_params[:role] != "staff")
+                    puts user_params[:role]
+                    return render json: {status: 'FAIL', message: 'Creata user: role is invalid'}, status: :unprocessable_entity
+                end
                 user = User.new(user_params)
                 if user.save
                     render json: {status: 'SUCCESS', message: 'Create user', data: user}, status: :ok
@@ -51,7 +56,6 @@ module Api
                     render json: {status: 'FAIL', message: 'Update user'}, status: :unprocessable_entity
                 end
             end
-
             private 
             def user_params
                 params.permit(:name, :user_name, :password, :date_of_birth, :role, :phone_number, :address, :join_date)
