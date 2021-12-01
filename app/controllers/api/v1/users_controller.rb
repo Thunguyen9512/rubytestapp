@@ -1,12 +1,15 @@
 module Api
     module V1 
         class UsersController < ApplicationController
+
             def index
                 if user_params = ''
                     users = User.paginate(:page => params[:page], :per_page => params[:per_page] || 20).order('created_at desc')
+                    authorize users
                     pagination = { page: params[:page] || 1 , per_page: params[:per_page] || 20, total_pages: users.total_pages, total_count: users.total_entries }
                 else
                     users = User.where(role: user_params[:role]).paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
+                    authorize users
                     pagination = { page: params[:page] || 1 , per_page: params[:per_page] || 20, total_pages: users.total_pages, total_count: users.total_entries }
                 end
                 render json: {status: 'SUCCESS', message: 'Load user', data: users, pagination: pagination }, status: :ok
@@ -53,6 +56,16 @@ module Api
             end
 
             private 
+            # def authenticate_user
+            #     token, _option = token_and_options(request)
+            #     user_id = AuthenticationTokenService.decode(token)
+            #     @current_user = User.find(user_id)
+            #     User.find(user_id)
+            # rescue ActiveRecord::RecordNotFound
+            #     # render  status: :unauthorized
+            #     head :unauthorized
+            # end
+
             def user_params
                 params.permit(:name, :user_name, :password, :date_of_birth, :role, :phone_number, :address, :join_date)
             end

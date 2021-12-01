@@ -23,7 +23,6 @@ module Api
                                 #order.order_books.destroy_all
                                 #fixed
                                 order.destroy
-                                #Lou  Why not use return ?
                                 render json: {status: 'FAIL', message: 'Create order book', data: order_book.errors}, status: :unprocessable_entity
                                 return;
                             else
