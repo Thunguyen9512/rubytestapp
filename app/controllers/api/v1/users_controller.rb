@@ -1,8 +1,7 @@
 module Api
     module V1 
         class UsersController < ApplicationController
-            before_action :authenticate_user,  only: [:index, :update]
-            before_action :authorize_as_admin, only: [:destroy]
+            skip_before_action :authenticate!, only: :signup
             def index
                 if user_params = ''
                     users = User.paginate(:page => params[:page], :per_page => params[:per_page] || 20).order('created_at desc')
@@ -30,6 +29,13 @@ module Api
                     render json: {status: 'FAIL', message: 'Creata user', data: user}, status: :unprocessable_entity
                 end
             end
+
+            def signup
+                user = User.create!(user_params)
+                auth_token = AuthenticateUser.new(user.user_name, user.password).call
+                response = { message: Message.account_created, auth_token: auth_token }
+                json_response(response, :created)
+              end
 
             def destroy
                 user = User.find_by(id: params[:id])

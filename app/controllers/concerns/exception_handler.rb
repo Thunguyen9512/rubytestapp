@@ -14,7 +14,7 @@ module ExceptionHandler
 
     rescue_from ActiveRecord::RecordNotFound do |e|
       json_response({ message: e.message }, :not_found)
-    end
+    end``
 
     rescue_from ActiveRecord::RecordInvalid do |e|
       json_response({ message: e.message }, :unprocessable_entity)
@@ -30,12 +30,12 @@ module ExceptionHandler
     json_response({ message: e.message }, :unauthorized)
   end
 
-  def response_error e
-    error_type = e.class.name.scan(/ExceptionHandler::(.*)/).flatten.first.underscore.to_sym
-    response = {
-      message: Settings.handle_error.public_send(error_type).message,
-      error_code: Settings.handle_error.public_send(error_type).error_code
-    }
-    render json: response, status: :bad_request
-  end
+  # def response_error e
+  #   error_type = e.class.name.scan(/ExceptionHandler::(.*)/).flatten.first.underscore.to_sym
+  #   response = {
+  #     message: Settings.handle_error.public_send(error_type).message,
+  #     error_code: Settings.handle_error.public_send(error_type).error_code
+  #   }
+  #   render json: response, status: :bad_request
+  # end
 end

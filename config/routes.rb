@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  post 'user_token' => 'user_token#create'
-  get    'auth' => 'home#auth'
+  post 'auth/login', to: 'authentication#authenticate'
+  post 'signup', to: 'users#signup'
   get 'home/index'
   get 'homepage/index'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
