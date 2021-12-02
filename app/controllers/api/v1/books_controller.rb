@@ -2,6 +2,8 @@ module Api
     module V1 
         class BooksController < ApplicationController
             # include ActionController::HttpAuthentication::Token
+            before_action :authenticate_user
+
 
             def index
                 books = Book.paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
@@ -16,6 +18,8 @@ module Api
                     }
                 end
                 render json: {status: 'SUCCESS', message: 'load book', data: record, pagination: pagination}, status: :ok
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
             def show
                 book = Book.find_by(id: params[:id])
@@ -29,6 +33,8 @@ module Api
                     }
                 end
                 render json: {status: 'SUCCESS', message: 'Show book', data: record}, status: :ok
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             def create 
@@ -39,6 +45,8 @@ module Api
                 else 
                     render json: {status: 'FAIL', message: 'creata book', data: book.errors}, status: :unprocessable_entity
                 end
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             def destroy
@@ -53,7 +61,8 @@ module Api
                 else 
                     render json: {status: 'FAIL', message: 'Delete book', data: book.errors}, status: :unprocessable_entity
                 end
-
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             def update
@@ -69,6 +78,8 @@ module Api
                 else 
                     render json: {status: 'FAIL', message: 'Update book', data: book.errors}, status: :unprocessable_entity
                 end
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             private 

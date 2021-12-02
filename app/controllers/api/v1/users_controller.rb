@@ -1,6 +1,7 @@
 module Api
     module V1 
         class UsersController < ApplicationController
+            before_action :authenticate_user
 
             def index
                 if user_params = ''
@@ -13,24 +14,35 @@ module Api
                     pagination = { page: params[:page] || 1 , per_page: params[:per_page] || 20, total_pages: users.total_pages, total_count: users.total_entries }
                 end
                 render json: {status: 'SUCCESS', message: 'Load user', data: users, pagination: pagination }, status: :ok
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do unot have permission'}, status: :unprocessable_entity
             end
 
             def show
                 user = User.find_by(id: params[:id])
+                authorize user
                 render json: {status: 'SUCCESS', message: 'Show user', data: user}, status: :ok
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             def create 
                 user = User.new(user_params)
+                authorize user
                 if user.save
                     render json: {status: 'SUCCESS', message: 'Create user', data: user}, status: :ok
                 else 
                     render json: {status: 'FAIL', message: 'Creata user', data: user}, status: :unprocessable_entity
                 end
+            rescue ArgumentError
+                render json: {status: 'FAIL', message: 'Creata user: invalid role'}, status: :unprocessable_entity
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             def destroy
                 user = User.find_by(id: params[:id])
+                authorize user
                 if !user
                     render json: {status: 'FAIL', message: 'Delete user'}, status: :unprocessable_entity
                     return
@@ -40,10 +52,13 @@ module Api
                 else 
                     render json: {status: 'FAIL', message: 'Delete user', data: user.errors}, status: :unprocessable_entity
                 end
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             def update
                 user = User.find_by(id: params[:id])
+                authorize user
                 if !user
                     render json: {status: 'FAIL', message: 'Update user'}, status: :unprocessable_entity
                     return
@@ -53,6 +68,8 @@ module Api
                 else 
                     render json: {status: 'FAIL', message: 'Update user'}, status: :unprocessable_entity
                 end
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             private 
@@ -69,6 +86,7 @@ module Api
             def user_params
                 params.permit(:name, :user_name, :password, :date_of_birth, :role, :phone_number, :address, :join_date)
             end
+
         end
     end
 end

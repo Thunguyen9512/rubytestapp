@@ -15,5 +15,6 @@ class AuthenticationTokenService
             return decode_token[0]["user_id"]
         end
     rescue JWT::DecodeError
+        # head :unauthorized
     end
 end

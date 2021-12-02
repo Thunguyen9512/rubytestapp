@@ -1,21 +1,15 @@
-class UserPolicy < ApplicationPolicy
+class CategoryPolicy < ApplicationPolicy
   # class Scope < Scope
   #   def resolve
-  #     if user.role == "admin"
-  #       scope.all
-  #     end
+  #     scope.all
   #   end
   # end
-  def update?
-    is_admin?
-  end
-
   def show?
-    is_admin?
+    return true
   end
 
   def index?
-    is_admin?
+    return true
   end
 
   def update?

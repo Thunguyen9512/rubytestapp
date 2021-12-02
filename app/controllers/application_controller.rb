@@ -4,9 +4,7 @@ class ApplicationController < ActionController::Base
     include Pundit
     skip_before_action :verify_authenticity_token
 
-    before_action :authenticate_user
-
-    after_action :verify_authorized, only: :index
+    # after_action :verify_authorized, only: :index
 
     def current_user
         @current_user

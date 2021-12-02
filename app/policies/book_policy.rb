@@ -1,14 +1,11 @@
 class BookPolicy < ApplicationPolicy
-  class Scope < Scope
-    def resolve
-      if user.role == "admin"
-        scope.all
-      end
-    end
-  end
-  def update?
-    is_admin?
-  end
+  # class Scope < Scope
+  #   def resolve
+  #     if user.role == "admin"
+  #       scope.all
+  #     end
+  #   end
+  # end
 
   def show?
     return true
