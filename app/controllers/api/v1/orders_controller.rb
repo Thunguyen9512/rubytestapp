@@ -4,17 +4,45 @@ module Api
             before_action :authenticate_user
 
             def index
-                orders = Order.paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
+                # orders = Order.paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
+                orders = Order.includes(:order_books).paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
                 authorize orders
+                record = orders.map do |order|
+                    books = order.order_books.map do |order_book|
+                        {
+                            title: order_book.book.name,
+                            quantity: order_book.quantity,
+                            book_id: order_book.book.id,
+                        }
+                    end
+                    {
+                        data: order,
+                        books: books,
+                    }
+                end
                 pagination = { page: params[:page] || 1 , per_page: params[:per_page] || 20, total_pages: orders.total_pages, total_count: orders.total_entries }   
-                render json: {status: 'SUCCESS', message: 'Load order', data: orders, pagination: pagination}, status: :ok
+                render json: {status: 'SUCCESS', message: 'Load order', data: record, pagination: pagination}, status: :ok
             rescue Pundit::NotAuthorizedError
                 render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
             def show
                 order = Order.find_by(id: params[:id])
                 authorize order
-                render json: {status: 'SUCCESS', message: 'Show order', data: order}, status: :ok
+
+                books = order.order_books.map do |order_book|
+                    {
+                        title: order_book.book.name,
+                        quantity: order_book.quantity,
+                        book_id: order_book.book.id,
+                    }
+                end
+
+                record = {
+                    data: order,
+                    books: books,
+                }
+                
+                render json: {status: 'SUCCESS', message: 'Show order', data: record}, status: :ok
             rescue Pundit::NotAuthorizedError
                 render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
