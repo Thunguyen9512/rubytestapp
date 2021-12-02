@@ -1,20 +1,57 @@
 module Api
     module V1 
         class OrdersController < ApplicationController
+            before_action :authenticate_user
+
             def index
-                orders = Order.paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
+                # orders = Order.paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
+                orders = Order.includes(:order_books).paginate(:page => params[:page], :per_page => params[:per_page]).order('created_at desc')
+                authorize orders
+                record = orders.map do |order|
+                    books = order.order_books.map do |order_book|
+                        {
+                            title: order_book.book.name,
+                            quantity: order_book.quantity,
+                            book_id: order_book.book.id,
+                        }
+                    end
+                    {
+                        data: order,
+                        books: books,
+                    }
+                end
                 pagination = { page: params[:page] || 1 , per_page: params[:per_page] || 20, total_pages: orders.total_pages, total_count: orders.total_entries }   
-                render json: {status: 'SUCCESS', message: 'Load order', data: orders, pagination: pagination}, status: :ok
+                render json: {status: 'SUCCESS', message: 'Load order', data: record, pagination: pagination}, status: :ok
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
             def show
                 order = Order.find_by(id: params[:id])
-                render json: {status: 'SUCCESS', message: 'Show order', data: order}, status: :ok
+                authorize order
+
+                books = order.order_books.map do |order_book|
+                    {
+                        title: order_book.book.name,
+                        quantity: order_book.quantity,
+                        book_id: order_book.book.id,
+                    }
+                end
+
+                record = {
+                    data: order,
+                    books: books,
+                }
+                
+                render json: {status: 'SUCCESS', message: 'Show order', data: record}, status: :ok
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
             def create
                 reader = User.find_by id: params[:reader_id], role: "reader"
                 staff = User.find_by id: params[:staff_id], role: "staff"
                 if reader && staff
                     order = Order.new(order_params)
+                    authorize order
                     if order.save
                         order_books_params[:book_list].each do |item|
                             order_book = order.order_books.build(item)
@@ -23,7 +60,6 @@ module Api
                                 #order.order_books.destroy_all
                                 #fixed
                                 order.destroy
-                                #Lou  Why not use return ?
                                 render json: {status: 'FAIL', message: 'Create order book', data: order_book.errors}, status: :unprocessable_entity
                                 return;
                             else
@@ -44,6 +80,7 @@ module Api
 
             def destroy
                 order = Order.find_by(id: params[:id])
+                authorize order
                 if !order 
                     render json: {status: 'FAIL', message: 'Delete order'}, status: :unprocessable_entity
                     return
@@ -53,10 +90,13 @@ module Api
                 else 
                     render json: {status: 'FAIL', message: 'Delete order', data: order.errors}, status: :unprocessable_entity
                 end
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             def update
                 order = Order.find_by(id: params[:id])
+                authorize order
                 if !order 
                     render json: {status: 'FAIL', message: 'Update order'}, status: :unprocessable_entity
                     return
@@ -66,6 +106,8 @@ module Api
                 else 
                     render json: {status: 'FAIL', message: 'Update order'}, status: :unprocessable_entity
                 end
+            rescue Pundit::NotAuthorizedError
+                render json: {status: 'FAIL', message: 'Do not have permission'}, status: :unprocessable_entity
             end
 
             private 
